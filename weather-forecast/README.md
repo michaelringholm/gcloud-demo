@@ -1,3 +1,17 @@
+# To do a test run
+mvn spring-boot:run
+
+# To deploy to GCP
+mvn appengine:deploy
+
+
+
+
+
+
+
+# ======== OBSOLETE ============ #
+
 # Spring Boot based Hello World app
 
 This sample shows how to run a [Spring Boot][spring-boot] application on [Google
