@@ -15,7 +15,9 @@
 # [END_EXCLUDE]
 runtime: java
 env: flex
-service: web
+
+# GCP always wants a default service for a new project, so we make the web project a default project for now
+# service: web
 
 runtime_config:  # Optional
   jdk: openjdk8

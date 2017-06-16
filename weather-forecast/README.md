@@ -1,3 +1,9 @@
+# If the project is new, first run the below command to create a "master" app
+gcloud app create
+
+# Set project
+gcloud config set project stelinno-dev
+
 # To do a test run
 mvn spring-boot:run
 
