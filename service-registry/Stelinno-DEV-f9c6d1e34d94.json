@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "stelinno-dev",
+  "private_key_id": "f9c6d1e34d9424522d8543594d1d8bae6e16eee7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCzo3YkcWS789rm\nnrQBnmTuRdDpaQfda6oO9tOdEwIWrmleG2jmRx22ulhMQPG7ea9y8aMArUxlbngZ\n+tGsFul3ZID2fXSF3GaWZVGPVlLezAp0m3xFA8eDmVBKxEJu4NW1nstU9bnlJ1SL\niITOGEabg5SjPrtA5GthZGKmxrWNbq9qiGc8wcaQZRoJN+/Fi09JpwrKO/GeiKwO\nS62uqeOmSkhE6YeXg+JTNpAfHdYDyuaDJH0zvG7tarjzLbIPgqAYuO5UDm2Mn+6J\nk8vrUYO25jXruVIZLM1YnlsqbjJpO67mjjFzloqDy0dIbCcLuIeQLJFDohvt09iw\n88Nr7Kt1AgMBAAECggEAOaO/AkWCKY6+09Xjc0uEHjI3rNU/KUxlBiUr1FAnkOiI\ntaH84Dq8bYfQUjNafSm34p1nDI4On9M45TkmMt4tLlqIyM6LZ3JHVoWPDHuJ3qRA\nzJahYrGqQG8epMbhfBtXZ03a91lbOwyKI7V7y3ddnIO1W0YDJnjEfb0MrG/BDG6I\nFIuAE8Qq32pryfqF/jeorUqrCNqSEO9qGcu9fA7pM/Zny4QH1Blzs3oCewH/YdtE\njp2UeQhdlXkIF0hNB28H8tqCC/bAC1rfFzLxpoOHwIrjxg8Jy7iqrOgSZxXfo2Bf\n14lsNthiSk9kqz8RjYVdLU1qJddRkpHXY2ch73bbNwKBgQDmBWqcUB7Css9Vb72s\n4SqWRheYJEzu3uzV2MI31+9NZLmZ1rf3w9MY0eBjsTQJM/7xq/nVdcYSzgjNWUO6\nu4z1vgAr3k5madV31/ipl7GMTN5bb3DPgR9O152D74n0a4WGR0/eL0l/hNgjPXj6\nKGG3OZ0jF5JiwR8kpUbiJjvpUwKBgQDH7VX65g9TOHEXaHF0K1mh9o95bDc0CN8w\nT+U/nlJ1vbOfoktOOErvqMWF7QvQvuQvAlJVzcpbDaGoAfKhVAtLPZ1EFR2gka2p\nJdrLJLXYjWTwEH9RrQRHnFSvYf2u2L7E41RECK8UAiMZr+dyvCoSdwucg+cqt2SC\nBRU2dVLXFwKBgQDLcez6dk7Oq/J/wYZE2x6crT//G9RDzj4xYjddxwpsLHOQYn5y\nkOwr3q2V30yD+045mH8vUqyvQzY70gD6rxmc3MEwC77SDDd3eTkBXx71VaOxwZ5I\nmg8D3+b8o6gj29nMi1RT0wUx2WCFwsA2mfLbaQTX3ehmmiMeeWR5b5G76wKBgQDA\nh4YtQC+x7MC70hCv1q9SkaZJQDVJHuIQHGCgi07NpAm+yQPMJ9nCQb0147llJO+J\ndarkhnFAjjgHGxkU02Ks6oDwd4U4hBHAunug9ZFJIaD6rmhttzhP3fSPkMZEAuZz\npJgZjGNN2WED86nni9zYO1wrNbsAH+viahKrhwBnsQKBgQC6kkNWEKIo0+CFmFHF\n/WqD9AFFePsxQiRR2jy2SBZh9IdeYBrDF84qBWLuTeJyPXl+ffTLTdvzwqZClmV9\nQP734G1gBxNkuo1eEdObenSAD3QeOkr+4z+IcalafbbuawaHOKvVTU8EtQ4TxGEU\nAPFpcNrfxub/6weFxhW7iiU5lQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "stelinno-sa@stelinno-dev.iam.gserviceaccount.com",
+  "client_id": "113994774308974187603",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/stelinno-sa%40stelinno-dev.iam.gserviceaccount.com"
+}
