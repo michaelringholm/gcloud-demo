@@ -16,7 +16,8 @@ gcloud beta emulators datastore start
 # To use the Datastore emulator
 gcloud beta emulators datastore env-init
 
-
+# Using Catatumbo
+http://jmethods.com/catatumbo/quick-start.html
 
 
 # ======== OBSOLETE ============ #
