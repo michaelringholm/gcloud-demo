@@ -19,6 +19,7 @@ package com.stelinno.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,12 +29,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jmethods.catatumbo.EntityManager;
-import com.jmethods.catatumbo.EntityManagerFactory;
 import com.jmethods.catatumbo.EntityQueryRequest;
 import com.jmethods.catatumbo.QueryResponse;
 import com.stelinno.service.entities.Service;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages="com.stelinno.uddi")
 @RestController
 public class ServiceRegistryApp {
   @RequestMapping("/home")
@@ -47,12 +47,13 @@ public class ServiceRegistryApp {
    */
   	@RequestMapping(value="/register", method=RequestMethod.POST)
 	public void register(@RequestBody Service service) {
-		EntityManagerFactory emf = EntityManagerFactory.getInstance();
-		//EntityManager em = emf.createDefaultEntityManager("com.stelinno.uddi");
-		EntityManager em = emf.createEntityManager("stelinno-dev", "Stelinno-DEV-f9c6d1e34d94.json", "com.stelinno.uddi");
-		service = em.insert(service);
+		service = entityManager.insert(service);
 		System.out.println(String.format("service with ID %d created successfully", service.getId()));
 	}
+  	
+  	
+  	@Autowired
+  	EntityManager entityManager;
   	
     /***
      * curl http://localhost:8080/get?serviceName=Sports%20Results
@@ -60,28 +61,21 @@ public class ServiceRegistryApp {
      */
    	@RequestMapping(value="/get", method=RequestMethod.GET)
   	public @ResponseBody List<Service> get(String serviceName) {
-  		EntityManagerFactory emf = EntityManagerFactory.getInstance();
-  		//EntityManager em = emf.createDefaultEntityManager("com.stelinno.uddi");
-  		EntityManager em = emf.createEntityManager("stelinno-dev", "Stelinno-DEV-f9c6d1e34d94.json", "com.stelinno.uddi");
-
-  		//Service service = em.loadByName(Service.class, "Sports Results");
-  		//System.out.println(String.format("service with ID %d loaded successfully", service.getId()));
-  		EntityQueryRequest request = em.createEntityQueryRequest("SELECT * FROM service WHERE name = @name");
-	  	//Set the parameter citizen to the desired value and execute the query
+  		EntityQueryRequest request = entityManager.createEntityQueryRequest("SELECT * FROM service WHERE name = @name");
 	  	request.setNamedBinding("name", serviceName);
-	  	QueryResponse<Service> response = em.executeEntityQueryRequest(Service.class, request);
+	  	QueryResponse<Service> response = entityManager.executeEntityQueryRequest(Service.class, request);
 	  	List<Service> services = response.getResults();
 	  	return services;
   	}  	
   	
-  	@RequestMapping(value="/upsert", method=RequestMethod.GET)
-	public void create(@RequestBody Service serviceDraft) {
-		EntityManagerFactory emf = EntityManagerFactory.getInstance();
-		//EntityManager em = emf.createDefaultEntityManager("com.stelinno.uddi");
-		EntityManager em = emf.createEntityManager("stelinno-dev", "Stelinno-DEV-f9c6d1e34d94.json", "com.stelinno.uddi");
-		
-		Service service = new Service("Sports Results", "Sports", "Statistics", "http://sports-service.azure.com");
-		service = em.upsert(service);
+   	/***
+   	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results", "domain":"Sports", "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' http://localhost:8080/upsert
+   	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"id":"5710239819104256","name":"Sports Results", "domain":"Sports", "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' http://localhost:8080/upsert
+   	 * @param service
+   	 */
+  	@RequestMapping(value="/upsert", method=RequestMethod.POST)
+	public void upsert(@RequestBody Service service) {
+		service = entityManager.upsert(service);
 		System.out.println(String.format("service with ID %d created successfully", service.getId()));
 	}  	
 
