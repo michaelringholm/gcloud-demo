@@ -1,8 +1,12 @@
 # If the project is new, first run the below command to create a "master" app
 gcloud app create
 
+# View current active project
+gcloud config list
+
 # Set project
 gcloud config set project stelinno-dev
+gcloud config set project stelinno-prod
 
 # To do a test run
 mvn spring-boot:run
@@ -18,6 +22,9 @@ gcloud beta emulators datastore env-init
 
 # Using Catatumbo
 http://jmethods.com/catatumbo/quick-start.html
+
+# Call upsert remotely
+curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results", "domain":"Sports", "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' https://service-registry-dot-stelinno-dev.appspot.com/upsert
 
 
 # ======== OBSOLETE ============ #
