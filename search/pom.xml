@@ -85,11 +85,24 @@ Copyright 2015 Google Inc.
       <scope>test</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.guava/guava-gwt -->
-<dependency>
+	<dependency>
     <groupId>com.google.guava</groupId>
     <artifactId>guava-gwt</artifactId>
-    <version>22.0</version>
-</dependency>
+    <version>22.0</version>  
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-context</artifactId>
+	    <version>4.3.9.RELEASE</version>
+	</dependency>  	
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-test</artifactId>
+	    <version>4.3.9.RELEASE</version>
+	    <scope>test</scope>
+	</dependency>
     
   </dependencies>
 
