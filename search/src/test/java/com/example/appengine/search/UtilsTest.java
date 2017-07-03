@@ -25,12 +25,18 @@ import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.stelinno.uddi.search.IndexHelper;
+import com.stelinno.uddi.search.test.AppConfig;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {AppConfig.class})
 public class UtilsTest {
 	private static final String INDEX = "UtilsTestIndex";
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper();

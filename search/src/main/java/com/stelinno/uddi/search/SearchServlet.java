@@ -16,40 +16,32 @@ import com.google.appengine.api.search.SearchServiceFactory;
 // @formatter:on
 // CHECKSTYLE:ON
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-@SuppressWarnings("serial")
-@WebServlet(name = "uddiSearch", description = "Search: Search for a document", urlPatterns = "/uddi-search/search")
-public class SearchServlet extends HttpServlet {
+@RestController
+public class SearchServlet {
 
 	@Autowired
 	private IndexHelper indexHelper;
 
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		PrintWriter out = resp.getWriter();
-
+	@RequestMapping(value = "/searchOption", method = RequestMethod.GET)
+	public String search() {
 		Service service = null;
 		try {
 			service = new Service(1001, "My Service 1", "Test", "Sub Test 1", "http://myservice1.stelinno.com/");
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(1007, "My Service 2", "Test", "Sub Test 2", "http://myservice2.stelinno.com/");
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(2005, "My Service 3", "Test", "Sub Test 3", "http://myservice3.stelinno.com/");
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(4987, "My Service 4", "Test", "Sub Test 4", "http://myservice4.stelinno.com/");
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(4989, "Parcel Tracking Service", "Shipping", "Parcel",
 					"http://parcel-tracking.stelinno.com/");
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
 		} catch (InterruptedException e) {
 			// ignore
 		}
@@ -65,9 +57,9 @@ public class SearchServlet extends HttpServlet {
 				// Iterate over the documents in the results
 				for (ScoredDocument document : results) {
 					// handle results
-					out.print("name: " + document.getOnlyField("name").getText());
-					out.println(", domain: " + document.getOnlyField("domain").getText());
-					out.println(", subDomain: " + document.getOnlyField("subDomain").getText());
+					System.out.println("name: " + document.getOnlyField("name").getText());
+					System.out.println(", domain: " + document.getOnlyField("domain").getText());
+					System.out.println(", subDomain: " + document.getOnlyField("subDomain").getText());
 				}
 			} catch (SearchException e) {
 				if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode()) && ++attempts < maxRetry) {
@@ -88,7 +80,7 @@ public class SearchServlet extends HttpServlet {
 		// [END search_document]
 		// We don't test the search result below, but we're fine if it runs
 		// without errors.
-		out.println("Search performed");
+		
 		Index index = indexHelper.getIndex();
 		// [START simple_search_1]
 		index.search("service");
@@ -100,5 +92,6 @@ public class SearchServlet extends HttpServlet {
 		// search for documents with pianos that cost less than $5000
 		// index.search("product = piano AND price < 5000");
 		// [END simple_search_3]
+		return "Search performed";
 	}
 }

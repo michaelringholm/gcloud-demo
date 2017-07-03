@@ -40,31 +40,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Code snippet for getting a document from Index.
  */
-@SuppressWarnings("serial")
-@WebServlet(name = "uddiSearchIndex", description = "Search: Index a new document", urlPatterns = "/uddi-search/index")
-public class IndexServlet extends HttpServlet {
+@RestController
+public class IndexServlet {
 
 	@Autowired
 	private IndexHelper indexHelper;
 
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		PrintWriter out = resp.getWriter();
+	@RequestMapping(value="/index", method=RequestMethod.GET)
+	public String index() {
 		Document document = Document.newBuilder().setId("AZ125")
 				.addField(Field.newBuilder().setName("myField").setText("myValue")).build();
 		try {
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, document);
+			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, document);
 		} catch (InterruptedException e) {
-			out.println("Interrupted");
-			return;
+			System.out.println("Interrupted");
+			return "interrupted";
 		}
-		out.println("Indexed a new document.");
+		System.out.println("Indexed a new document.");
 		// [START get_document]
-		IndexSpec indexSpec = IndexSpec.newBuilder().setName(IndexHelper.SEARCH_INDEX).build();
+		IndexSpec indexSpec = IndexSpec.newBuilder().setName(indexHelper.SEARCH_INDEX).build();
 		Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
 
 		// Fetch a single document by its doc_id
@@ -73,6 +74,6 @@ public class IndexServlet extends HttpServlet {
 		// Fetch a range of documents by their doc_ids
 		GetResponse<Document> docs = index.getRange(GetRequest.newBuilder().setStartId("AZ125").setLimit(100).build());
 		// [END get_document]
-		out.println("myField: " + docs.getResults().get(0).getOnlyField("myField").getText());
+		return "myField: " + docs.getResults().get(0).getOnlyField("myField").getText();
 	}
 }

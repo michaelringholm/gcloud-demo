@@ -17,8 +17,11 @@
 package com.example.appengine.search;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+import com.google.appengine.api.search.Results;
+import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.stelinno.uddi.search.SearchOptionServlet;
 import com.stelinno.uddi.search.test.AppConfig;
@@ -27,36 +30,25 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.PrintWriter;
 import java.io.StringWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfig.class})
 public class SearchOptionServletTest {
   private final LocalServiceTestHelper helper = new LocalServiceTestHelper();
-
-  @Mock private HttpServletRequest mockRequest;
-  @Mock private HttpServletResponse mockResponse;
   private StringWriter responseWriter;
+  
+  @Autowired
   private SearchOptionServlet servletUnderTest;
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
     helper.setUp();
-
-    // Set up a fake HTTP response.
-    responseWriter = new StringWriter();
-    when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
-
-    servletUnderTest = new SearchOptionServlet();
   }
 
   @After
@@ -66,9 +58,8 @@ public class SearchOptionServletTest {
 
   @Test
   public void doGet_successfulyInvoked() throws Exception {
-    servletUnderTest.doGet(mockRequest, mockResponse);
-    assertThat(responseWriter.toString())
-        .named("SearchOptionServlet response")
-        .contains("documentId=theOnlyCoffeeRoaster");
+    Results<ScoredDocument> result = servletUnderTest.searchOption();
+    
+    assertEquals("theOnlyCoffeeRoaster", result.iterator().next().getId());
   }
 }

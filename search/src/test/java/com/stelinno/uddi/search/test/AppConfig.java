@@ -9,8 +9,20 @@ import com.stelinno.uddi.search.IndexHelper;
 @Configuration
 @ComponentScan("com.stelinno.uddi.search")
 public class AppConfig {
+	
+	@Bean
+	String SEARCH_INDEX() {
+		return "UnitTestUDDISearchIndex";
+	}
+	
+	@Bean
+	String SEARCH_OPTION_CONTROLLER_SEARCH_INDEX() {
+		return "SEARCH_OPTION_CONTROLLER_SEARCH_INDEX";
+	}
+	
 	@Bean
 	IndexHelper indexHelper() {
+		//return new UnitTestIndexHelper();
 		return new IndexHelper();
 	}
 	

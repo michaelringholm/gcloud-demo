@@ -34,6 +34,7 @@ import com.google.appengine.api.search.Schema;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
@@ -42,24 +43,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-@SuppressWarnings("serial")
-@WebServlet(name = "searchSchema", description = "Search: List the schema for a document.", urlPatterns = "/search/schema")
-public class SchemaServlet extends HttpServlet {
+@RestController
+public class SchemaServlet {
 
 	@Autowired
 	private IndexHelper indexHelper;
 	
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		PrintWriter out = resp.getWriter();
+	@RequestMapping(value="/schema", method=RequestMethod.GET)
+	public String schema() {
 		Document doc = Document.newBuilder().setId("theOnlyCar")
 				.addField(Field.newBuilder().setName("maker").setText("Toyota"))
 				.addField(Field.newBuilder().setName("price").setNumber(300000))
 				.addField(Field.newBuilder().setName("color").setText("lightblue"))
 				.addField(Field.newBuilder().setName("model").setText("Prius")).build();
 		try {
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, doc);
+			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, doc);
 		} catch (InterruptedException e) {
 			// ignore
 		}
@@ -67,6 +69,7 @@ public class SchemaServlet extends HttpServlet {
 		GetResponse<Index> response = SearchServiceFactory.getSearchService()
 				.getIndexes(GetIndexesRequest.newBuilder().setSchemaFetched(true).build());
 
+		StringWriter sw = new StringWriter();
 		// List out elements of each Schema
 		for (Index index : response) {
 			Schema schema = index.getSchema();
@@ -74,10 +77,10 @@ public class SchemaServlet extends HttpServlet {
 				List<FieldType> typesForField = schema.getFieldTypes(fieldName);
 				// Just printing out the field names and types
 				for (FieldType type : typesForField) {
-					out.println(index.getName() + ":" + fieldName + ":" + type.name());
+					sw.write((index.getName() + ":" + fieldName + ":" + type.name()));
 				}
 			}
 		}
-		// [END list_schema]
+		return sw.toString();
 	}
 }

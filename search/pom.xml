@@ -31,6 +31,7 @@ Copyright 2015 Google Inc.
   	<appengine.sdk.version>1.9.54</appengine.sdk.version>
   	<maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
+    <java-version>1.8</java-version>
   </properties>
 
   <dependencies>
@@ -46,6 +47,18 @@ Copyright 2015 Google Inc.
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
+    	<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-web</artifactId>
+	    <version>4.3.9.RELEASE</version>
+	</dependency>
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-webmvc</artifactId>
+	    <version>4.3.9.RELEASE</version>
+	</dependency>
 
     <!-- Test Dependencies -->
     <dependency>

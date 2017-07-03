@@ -3,6 +3,8 @@ package com.stelinno.uddi.search;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 // [START index_import]
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Index;
@@ -16,7 +18,8 @@ import com.google.appengine.api.search.StatusCode;
  * A utility class for the search API sample.
  */
 public class IndexHelper {
-	public static final String SEARCH_INDEX = "PrimaryUDDISearchIndex";
+	@Autowired
+	public String SEARCH_INDEX;
 	private static final Map<String, Index> indexMap = new HashMap<>();
 	/**
 	 * Put a given document into an index with the given indexName.
@@ -61,7 +64,7 @@ public class IndexHelper {
 	// [END putting_document_with_retry]
 	
 	public Index getIndex() {
-		IndexSpec indexSpec = IndexSpec.newBuilder().setName(IndexHelper.SEARCH_INDEX).build();
+		IndexSpec indexSpec = IndexSpec.newBuilder().setName(SEARCH_INDEX).build();
 		Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
 		return index;
 	}

@@ -48,15 +48,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Code snippet for searching with query options.
- */
-@SuppressWarnings("serial")
-@WebServlet(name = "searchOption", description = "Search: Get the Host Name", urlPatterns = "/search/option")
-@Component
-public class SearchOptionServlet extends HttpServlet {
+@RestController
+public class SearchOptionServlet {
 	private static final Logger LOG = Logger.getLogger(SearchOptionServlet.class.getSimpleName());
+	
+	@Autowired
+	String SEARCH_OPTION_CONTROLLER_SEARCH_INDEX;
 
 	private Results<ScoredDocument> doSearch() {
 		// [START search_with_options]
@@ -78,7 +80,7 @@ public class SearchOptionServlet extends HttpServlet {
 
 			// Build the Query and run the search
 			Query query = Query.newBuilder().setOptions(options).build(queryString);
-			IndexSpec indexSpec = IndexSpec.newBuilder().setName(IndexHelper.SEARCH_INDEX).build();
+			IndexSpec indexSpec = IndexSpec.newBuilder().setName(SEARCH_OPTION_CONTROLLER_SEARCH_INDEX).build();
 			Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
 			Results<ScoredDocument> result = index.search(query);
 			return result;
@@ -92,8 +94,8 @@ public class SearchOptionServlet extends HttpServlet {
 	@Autowired
 	private IndexHelper indexHelper;
 
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	@RequestMapping(value="/searchOption", method=RequestMethod.GET)
+	public @ResponseBody Results<ScoredDocument> searchOption() {
 		// Put one document to avoid an error
 		Document document = Document.newBuilder().setId("theOnlyCoffeeRoaster")
 				.addField(Field.newBuilder().setName("price").setNumber(200))
@@ -103,14 +105,16 @@ public class SearchOptionServlet extends HttpServlet {
 				.addField(Field.newBuilder().setName("description").setText("A coffee bean roaster at home")).build();
 		try {
 			//IndexHelper.addToIndex(IndexHelper.SEARCH_INDEX, document);
-			indexHelper.addToIndex(IndexHelper.SEARCH_INDEX, document);
+			indexHelper.addToIndex(SEARCH_OPTION_CONTROLLER_SEARCH_INDEX, document);
 		} catch (InterruptedException e) {
 			// ignore
 		}
-		PrintWriter out = resp.getWriter();
+		
 		Results<ScoredDocument> result = doSearch();
 		for (ScoredDocument doc : result.getResults()) {
-			out.println(doc.toString());
+			System.out.println(doc.toString());
 		}
+		
+		return result;
 	}
 }
