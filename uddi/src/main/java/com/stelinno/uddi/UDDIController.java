@@ -16,10 +16,16 @@
 
 package com.stelinno.uddi;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +39,7 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.jmethods.catatumbo.EntityManager;
+import com.jmethods.catatumbo.EntityManagerFactory;
 import com.jmethods.catatumbo.EntityQueryRequest;
 import com.jmethods.catatumbo.QueryResponse;
 
@@ -250,6 +257,19 @@ public class UDDIController {
 		
 		//return results;
 	}
+	
+	@RequestMapping(value = "/find2", method = RequestMethod.GET)
+	private @ResponseBody Object find2(String serviceName) {
+		List<Service> servicesFound = new ArrayList<>();
+		Results<ScoredDocument> results = getIndex().search(serviceName);		
+		for (ScoredDocument document : results) {
+			Logger.getGlobal().info("name: " + document.getOnlyField("name").getText());
+			Logger.getGlobal().info("domain: " + document.getOnlyField("domain").getText());
+			servicesFound.add(DocumentMapper.toService(document));
+		}
+
+		return servicesFound;
+	}	
 
 	/**
 	 * <a href=
@@ -263,9 +283,19 @@ public class UDDIController {
 		return "Still surviving.";
 	}
 
+	@Autowired
+	private String version;
+	
 	@RequestMapping("/version")
 	public @ResponseBody String version() {
 		// Message body required though ignored
-		return "V1.0.2017-07-04-12:01";
+		return version;
 	}
+	
+	@RequestMapping("/host")
+	public @ResponseBody String host(HttpServletRequest request) {
+		//String hostName = request.getURI().getHost();
+		// Message body required though ignored
+		return request.getRequestURL().toString();
+	}	
 }
