@@ -1,23 +1,5 @@
-/*
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.stelinno.uddi;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -25,7 +7,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +20,6 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.jmethods.catatumbo.EntityManager;
-import com.jmethods.catatumbo.EntityManagerFactory;
 import com.jmethods.catatumbo.EntityQueryRequest;
 import com.jmethods.catatumbo.QueryResponse;
 
@@ -52,20 +32,6 @@ public class UDDIController {
 
 	@Autowired
 	EntityManager entityManager;
-
-	/***
-	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X
-	 * POST -d '{"name":"Sports Results", "domain":"Sports",
-	 * "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}'
-	 * http://localhost:8080/register
-	 * 
-	 * @param serviceDraft
-	 */
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public void register(@RequestBody Service service) {
-		service = entityManager.insert(service);
-		System.out.println(String.format("service with ID %d created successfully", service.getId()));
-	}
 
 	/***
 	 * curl http://localhost:8080/get?serviceName=Sports%20Results
@@ -82,41 +48,14 @@ public class UDDIController {
 	}
 
 	/***
-	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X
-	 * POST -d '{"name":"Sports Results", "domain":"Sports",
-	 * "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}'
-	 * http://localhost:8080/upsert curl -H "Accept: application/json" -H
-	 * "Content-type: application/json" -X POST -d
-	 * '{"id":"5710239819104256","name":"Sports Results", "domain":"Sports",
-	 * "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}'
-	 * http://localhost:8080/upsert
-	 * 
-	 * @param service
-	 */
-	@RequestMapping(value = "/upsert", method = RequestMethod.POST)
-	public void upsert(@RequestBody Service service) {
-		service = entityManager.upsert(service);
-		System.out.println(String.format("service with ID %d created successfully", service.getId()));
-	}
-
-	/***
-	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X
-	 * POST -d '{"domain":"Sports", "subDomain":"Statistics",
-	 * "endpoint":"http://sports-service.azure.com"}'
-	 * http://localhost:8080/insert curl -H "Accept: application/json" -H
-	 * "Content-type: application/json" -X POST -d '{"name":"Sports Results",
-	 * "domain":"Sports", "subDomain":"Statistics",
-	 * "endpoint":"http://sports-service.azure.com"}'
-	 * http://localhost:8080/insert curl -H "Accept: application/json" -H
-	 * "Content-type: application/json" -X POST -d '{"name":"Sports Results 2",
-	 * "domain":"Sports", "subDomain":"Statistics",
-	 * "endpoint":"http://sports-service.azure.com"}'
-	 * http://localhost:8080/insert
-	 * 
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"domain":"Sports", "subDomain":"Statistics","endpoint":"http://sports-service.azure.com"}' http://localhost:8080/insert 
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results","domain":"Sports", "subDomain":"Statistics","endpoint":"http://sports-service.azure.com"}' http://localhost:8080/insert 
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results 2", "domain":"Sports", "subDomain":"Statistics","endpoint":"http://sports-service.azure.com"}' http://localhost:8080/insert
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results","domain":"Sports", "subDomain":"Statistics","endpoint":"http://sports-service.azure.com"}' https://uddi-dot-stelinno-dev.appspot.com/insert.ctl
 	 * @param service
 	 */
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
-	public @ResponseBody Object insert(@RequestBody Service service) {
+	public @ResponseBody GenericResponse insert(@RequestBody Service service) {
 		if (service == null || service.getName() == null)
 			throw new RuntimeException("You must provide a name for your service!");
 
@@ -125,47 +64,29 @@ public class UDDIController {
 
 		service = entityManager.insert(service);
 		String success = String.format("Service with ID %d created successfully", service.getId());
-		System.out.println(success);
-		final long serviceId = service.getId();
 		// return new Object(){ public String status="success"; public String
 		// message="Service registered!"; public long id=serviceId; };
-		return new Object() {
-			public int status = HttpStatus.OK.value();
-			public String message = "Service registered!";
-			public long id = serviceId;
-		};
+		return new GenericResponse(HttpStatus.OK.value(), "Service registered!", service);
 	}
 
 	/***
-	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X
-	 * POST -d '{"id":"5081456606969856","name":"Sports Results",
-	 * "domain":"Sports", "subDomain":"Statistics",
-	 * "endpoint":"http://sports-service.azure.com"}'
-	 * http://localhost:8080/update
-	 * 
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"id":"5081456606969856","name":"Sports Results","domain":"Sports", "subDomain":"Statistics","endpoint":"http://sports-service.azure.com"}' http://localhost:8080/update 
 	 * @param service
 	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public @ResponseBody Object update(@RequestBody Service service) {
+	public @ResponseBody GenericResponse update(@RequestBody Service service) {
 		if (service == null || service.getId() == 0)
 			throw new RuntimeException("The Id of the service is incorrect!");
 
 		if (service.getName() == null)
 			throw new RuntimeException("You must provide a name for your service!");
 
-		if (getByName(service.getName()) != null)
+		Service existingService = getByName(service.getName());
+		if (existingService != null && existingService.getId() != service.getId())
 			throw new RuntimeException("A service with the given name already exist!");
 
 		service = entityManager.update(service);
-
-		String success = String.format("Service with ID %d updated successfully", service.getId());
-		System.out.println(success);
-		final long serviceId = service.getId();
-		return new Object() {
-			public int status = HttpStatus.OK.value();
-			public String message = "Service updated!";
-			public long id = serviceId;
-		};
+		return new GenericResponse(HttpStatus.OK.value(), "Service updated!", service);
 	}
 
 	/***
@@ -174,7 +95,7 @@ public class UDDIController {
 	 * @param service
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.GET)
-	public @ResponseBody Object delete(String name) {
+	public @ResponseBody GenericResponse delete(String name) {
 		if (name == null || name.length() < 1)
 			throw new RuntimeException("The name of the service is incorrect!");
 
@@ -183,13 +104,7 @@ public class UDDIController {
 			throw new RuntimeException("The service was not found!");
 
 		entityManager.delete(service);
-
-		String success = String.format("Service with ID %d deleted successfully", service.getId());
-		System.out.println(success);
-		return new Object() {
-			public int status = HttpStatus.OK.value();
-			public String message = "Service deleted!";
-		};
+		return new GenericResponse(HttpStatus.OK.value(), "Service deleted!", service);
 	}
 
 	private Service getByName(String serviceName) {
@@ -298,4 +213,27 @@ public class UDDIController {
 		// Message body required though ignored
 		return request.getRequestURL().toString();
 	}	
+	
+	/***
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results", "domain":"Sports","subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' http://localhost:8080/register 
+	 * @param serviceDraft
+	 */
+	@Deprecated
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	public void register(@RequestBody Service service) {
+		service = entityManager.insert(service);
+		System.out.println(String.format("service with ID %d created successfully", service.getId()));
+	}
+	
+	/***
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results", "domain":"Sports", "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' http://localhost:8080/upsert 
+	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"id":"5710239819104256","name":"Sports Results", "domain":"Sports","subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' http://localhost:8080/upsert
+	 * @param service
+	 */
+	@RequestMapping(value = "/upsert", method = RequestMethod.POST)
+	@Deprecated
+	public void upsert(@RequestBody Service service) {
+		service = entityManager.upsert(service);
+		System.out.println(String.format("service with ID %d created successfully", service.getId()));
+	}
 }
