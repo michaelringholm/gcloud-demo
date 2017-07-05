@@ -7,7 +7,9 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,9 +21,11 @@ import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.gson.Gson;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityQueryRequest;
 import com.jmethods.catatumbo.QueryResponse;
+import com.stelinno.uddi.json.JsonHelper;
 
 @RestController
 public class UDDIController {
@@ -30,8 +34,11 @@ public class UDDIController {
 		return "UDDI Home!";
 	}
 
-	@Autowired
-	EntityManager entityManager;
+	@Autowired EntityManager entityManager;
+	@Autowired private Gson gson;
+	@Autowired private HttpHeaders jsonHttpHeaders;
+	@Autowired private JsonHelper jsonHelper;
+	@Autowired private String baseUDDISearchServiceUrl;
 
 	/***
 	 * curl http://localhost:8080/get?serviceName=Sports%20Results
@@ -55,18 +62,23 @@ public class UDDIController {
 	 * @param service
 	 */
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
-	public @ResponseBody GenericResponse insert(@RequestBody Service service) {
-		if (service == null || service.getName() == null)
-			throw new RuntimeException("You must provide a name for your service!");
+	public ResponseEntity<String> insert(@RequestBody Service service) {
+		GenericResponse response = new GenericResponse(service);
+		
+		if (service == null || service.getName() == null) {
+			response.message = "You must provide a name for your service!";
+			return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
-		if (getByName(service.getName()) != null)
-			throw new RuntimeException("A service with the given name already exist!");
+		if (getByName(service.getName()) != null) {
+			response.message = "A service with the given name already exist!";
+			return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
 		service = entityManager.insert(service);
-		String success = String.format("Service with ID %d created successfully", service.getId());
-		// return new Object(){ public String status="success"; public String
-		// message="Service registered!"; public long id=serviceId; };
-		return new GenericResponse(HttpStatus.OK.value(), "Service registered!", service);
+		response.data = service;
+		response.message = "Service registered!";
+		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
 	}
 
 	/***
@@ -74,19 +86,29 @@ public class UDDIController {
 	 * @param service
 	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public @ResponseBody GenericResponse update(@RequestBody Service service) {
-		if (service == null || service.getId() == 0)
-			throw new RuntimeException("The Id of the service is incorrect!");
+	public ResponseEntity<String> update(@RequestBody Service service) {
+		GenericResponse response = new GenericResponse(service);
+		
+		if (service == null || service.getId() == 0) {
+			response.message = "The Id of the service is incorrect!";
+			return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
-		if (service.getName() == null)
-			throw new RuntimeException("You must provide a name for your service!");
+		if (service.getName() == null) {
+			response.message = "You must provide a name for your service!";
+			return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
 		Service existingService = getByName(service.getName());
-		if (existingService != null && existingService.getId() != service.getId())
-			throw new RuntimeException("A service with the given name already exist!");
+		if (existingService != null && existingService.getId() != service.getId()) {
+			response.message = "A service with the given name already exist!";
+			return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
 		service = entityManager.update(service);
-		return new GenericResponse(HttpStatus.OK.value(), "Service updated!", service);
+		response.data = service;
+		response.message = "Service updated!";
+		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
 	}
 
 	/***
@@ -95,16 +117,41 @@ public class UDDIController {
 	 * @param service
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.GET)
-	public @ResponseBody GenericResponse delete(String name) {
-		if (name == null || name.length() < 1)
-			throw new RuntimeException("The name of the service is incorrect!");
+	public ResponseEntity<String> delete(long serviceId) {
+		GenericResponse response = new GenericResponse();
+		if (serviceId != 0) {
+			response.message = "The id of the service is incorrect!";
+			return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
-		Service service = getByName(name);
-		if (service == null)
-			throw new RuntimeException("The service was not found!");
+		Service service = getById(serviceId);
+		if (service == null) {
+			response.message = "The service was not found!";
+			return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
 		entityManager.delete(service);
-		return new GenericResponse(HttpStatus.OK.value(), "Service deleted!", service);
+		service = entityManager.update(service);
+		response.data = service;
+		response.message = "Service deleted!";
+		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
+	}
+	
+	/***
+	 * curl http://localhost:8080/rebuild-index
+	 * 
+	 * @param service
+	 */
+	@RequestMapping(value = "/rebuild-index", method = RequestMethod.GET)
+	public ResponseEntity<String> rebuildIndex() {
+		GenericResponse response = new GenericResponse();	
+		List<Service> services = getAll();
+		for(Service service : services) {
+			jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");
+		}
+
+		response.message = "Service search index was rebuild!";
+		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
 	}
 
 	private Service getByName(String serviceName) {
@@ -119,6 +166,32 @@ public class UDDIController {
 
 		return serviceFound;
 	}
+	
+	private Service getById(long id) {
+		EntityQueryRequest request = entityManager.createEntityQueryRequest("SELECT * FROM service WHERE id = @id");
+		request.setNamedBinding("id", id);
+		QueryResponse<Service> response = entityManager.executeEntityQueryRequest(Service.class, request);
+		List<Service> services = response.getResults();
+
+		Service serviceFound = null;
+		if (services.size() > 0)
+			serviceFound = services.get(0);
+
+		return serviceFound;
+	}
+	
+	/**
+	 * Dangerous mostly for testing...
+	 * @return
+	 */
+	private List<Service> getAll() {
+		EntityQueryRequest request = entityManager.createEntityQueryRequest("SELECT * FROM service");
+		QueryResponse<Service> response = entityManager.executeEntityQueryRequest(Service.class, request);
+		List<Service> services = response.getResults();
+
+		return services;
+	}
+	
 
 	private static final String PRIMARY_SEARCH_INDEX = "PRIMARY_SEARCH_INDEX";
 

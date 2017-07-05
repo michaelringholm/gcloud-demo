@@ -8,9 +8,13 @@ public abstract class DocumentMapper {
 	
 		service.setId(Long.parseLong(document.getId()));
 		service.setName(document.getOnlyField("name").getText());
-		service.setName(document.getOnlyField("domain").getText());
-		service.setName(document.getOnlyField("subDomain").getText());
-		service.setName(document.getOnlyField("endpoint").getText());
+		service.setDomain(document.getOnlyField("domain").getText());
+		service.setSubDomain(document.getOnlyField("subDomain").getText());
+		service.setEndpoint(document.getOnlyField("endpoint").getText());
+		service.setDescription(document.getOnlyField("description").getText());
+		service.setSupportChat(document.getOnlyField("supportChat").getText());
+		service.setSupportEmail(document.getOnlyField("supportEmail").getText());
+		service.setServiceType(document.getOnlyField("serviceType").getText());
 		
 		return service;
 	}

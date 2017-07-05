@@ -8,9 +8,13 @@ import java.util.logging.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
+import com.google.gson.Gson;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityManagerFactory;
+import com.stelinno.uddi.json.JsonHelper;
 
 @Configuration
 @ComponentScan("com.stelinno.uddi")
@@ -41,9 +45,27 @@ public class AppConfig {
 		return em;
 	}
 	
-	@Bean
-	String version() {
+	@Bean String version() {
 		System.out.println("called version()!");
-		return "V1.0.2017-07-04-19:38";
+		return "V1.0.2017-07-05-14:20";
+	}
+	
+	@Bean String baseUDDISearchServiceUrl() {
+		return "https://search-dot-stelinno-dev.appspot.com";
+	}
+	
+	@Bean
+	HttpHeaders jsonHttpHeaders() {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		return httpHeaders;
+	}
+	
+	@Bean Gson gson() {
+		return new Gson();
+	}
+	
+	@Bean JsonHelper jsonHelper() {
+		return new JsonHelper();
 	}
 }
