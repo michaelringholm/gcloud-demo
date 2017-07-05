@@ -8,19 +8,36 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("com.stelinno.uddi.search")
 public class AppConfig {
 	
-	@Bean
-	String SEARCH_INDEX() {
-		return "PrimaryUDDISearchIndex";
+	@Bean String SEARCH_OPTION_CONTROLLER_SEARCH_INDEX() {
+		return "UDDI_PRIMARY_SEARCH_INDEX";
 	}
 	
-	@Bean
-	IndexHelper indexHelper() {
+	@Bean String SCHEMA_CONTROLLER_SEARCH_INDEX() {
+		return "UDDI_PRIMARY_SEARCH_INDEX";
+	}
+	
+	@Bean String SEARCH_CONTROLLER_SEARCH_INDEX() {
+		return "UDDI_PRIMARY_SEARCH_INDEX";
+	}
+	
+	@Bean String DELETE_CONTROLLER_SEARCH_INDEX() {
+		return "UDDI_PRIMARY_SEARCH_INDEX";
+	}
+	
+	@Bean String INDEX_CONTROLLER_SEARCH_INDEX() {
+		return "UDDI_PRIMARY_SEARCH_INDEX";
+	}
+	
+	@Bean String SEARCH_INDEX_CONTROLLER_INDEX_NAME() {
+		return "UDDI_PRIMARY_SEARCH_INDEX";
+	}
+	
+	@Bean IndexHelper indexHelper() {
 		return new IndexHelper();
 	}
 	
-	@Bean
-	String version() {
+	@Bean String version() {
 		System.out.println("called version()!");
-		return "V1.0.201707031344";
+		return "V1.0.2017-07-05-14:20";
 	}
 }

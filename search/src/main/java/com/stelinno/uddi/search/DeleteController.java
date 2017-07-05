@@ -29,13 +29,16 @@ public class DeleteController {
 	
 	@Autowired
 	private IndexHelper indexHelper;
+	
+	@Autowired
+	private String DELETE_CONTROLLER_SEARCH_INDEX;
 
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
-	public @ResponseBody String delete() {
+	public @ResponseBody Document delete() {
 		// Put one document to avoid an error
-		Document document = Document.newBuilder().addField(Field.newBuilder().setName("f").setText("v")).build();
+		Document document = Document.newBuilder().addField(Field.newBuilder().setName("MyName").setText("My Text")).build();
 		try {
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, document);
+			indexHelper.addToIndex(DELETE_CONTROLLER_SEARCH_INDEX, document);
 		} catch (InterruptedException e) {
 			// ignore
 		}
@@ -43,24 +46,23 @@ public class DeleteController {
 		try {
 			// looping because getRange by default returns up to 100 documents
 			// at a time
-			while (true) {
-				List<String> docIds = new ArrayList<>();
+			List<String> docIds = new ArrayList<>();
+			while (true) {				
 				// Return a set of doc_ids.
 				GetRequest request = GetRequest.newBuilder().setReturningIdsOnly(true).build();
-				GetResponse<Document> response = indexHelper.getIndex().getRange(request);
+				GetResponse<Document> response = indexHelper.getIndex(DELETE_CONTROLLER_SEARCH_INDEX).getRange(request);
 				if (response.getResults().isEmpty()) {
 					break;
 				}
 				for (Document doc : response) {
 					docIds.add(doc.getId());
 				}
-				indexHelper.getIndex().delete(docIds);
+				indexHelper.getIndex(DELETE_CONTROLLER_SEARCH_INDEX).delete(docIds);				
 			}
 		}
 		catch (RuntimeException e) {
 			LOG.log(Level.SEVERE, "Failed to delete documents", e);
 		}
-
-		return "Deleted documents.";
+		return document;
 	}
 }

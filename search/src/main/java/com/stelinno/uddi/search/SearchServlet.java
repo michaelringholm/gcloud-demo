@@ -26,22 +26,25 @@ public class SearchServlet {
 
 	@Autowired
 	private IndexHelper indexHelper;
+	
+	@Autowired
+	private String SEARCH_CONTROLLER_SEARCH_INDEX;
 
-	@RequestMapping(value = "/searchOption", method = RequestMethod.GET)
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String search() {
 		Service service = null;
 		try {
 			service = new Service(1001, "My Service 1", "Test", "Sub Test 1", "http://myservice1.stelinno.com/");
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(SEARCH_CONTROLLER_SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(1007, "My Service 2", "Test", "Sub Test 2", "http://myservice2.stelinno.com/");
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(SEARCH_CONTROLLER_SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(2005, "My Service 3", "Test", "Sub Test 3", "http://myservice3.stelinno.com/");
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(SEARCH_CONTROLLER_SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(4987, "My Service 4", "Test", "Sub Test 4", "http://myservice4.stelinno.com/");
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(SEARCH_CONTROLLER_SEARCH_INDEX, ServiceMapper.toDocument(service));
 			service = new Service(4989, "Parcel Tracking Service", "Shipping", "Parcel",
 					"http://parcel-tracking.stelinno.com/");
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, ServiceMapper.toDocument(service));
+			indexHelper.addToIndex(SEARCH_CONTROLLER_SEARCH_INDEX, ServiceMapper.toDocument(service));
 		} catch (InterruptedException e) {
 			// ignore
 		}
@@ -52,7 +55,7 @@ public class SearchServlet {
 		while (true) {
 			try {
 				String queryString = "name = parcel AND domain = shipping";
-				Results<ScoredDocument> results = indexHelper.getIndex().search(queryString);
+				Results<ScoredDocument> results = indexHelper.getIndex(SEARCH_CONTROLLER_SEARCH_INDEX).search(queryString);
 
 				// Iterate over the documents in the results
 				for (ScoredDocument document : results) {
@@ -81,7 +84,7 @@ public class SearchServlet {
 		// We don't test the search result below, but we're fine if it runs
 		// without errors.
 		
-		Index index = indexHelper.getIndex();
+		Index index = indexHelper.getIndex(SEARCH_CONTROLLER_SEARCH_INDEX);
 		// [START simple_search_1]
 		index.search("service");
 		// [END simple_search_1]

@@ -53,6 +53,9 @@ public class SchemaServlet {
 	@Autowired
 	private IndexHelper indexHelper;
 	
+	@Autowired
+	private String SCHEMA_CONTROLLER_SEARCH_INDEX;
+	
 	@RequestMapping(value="/schema", method=RequestMethod.GET)
 	public String schema() {
 		Document doc = Document.newBuilder().setId("theOnlyCar")
@@ -61,7 +64,7 @@ public class SchemaServlet {
 				.addField(Field.newBuilder().setName("color").setText("lightblue"))
 				.addField(Field.newBuilder().setName("model").setText("Prius")).build();
 		try {
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, doc);
+			indexHelper.addToIndex(SCHEMA_CONTROLLER_SEARCH_INDEX, doc);
 		} catch (InterruptedException e) {
 			// ignore
 		}

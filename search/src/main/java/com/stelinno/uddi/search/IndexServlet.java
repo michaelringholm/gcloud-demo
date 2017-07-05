@@ -52,20 +52,23 @@ public class IndexServlet {
 
 	@Autowired
 	private IndexHelper indexHelper;
+	
+	@Autowired
+	private String INDEX_CONTROLLER_SEARCH_INDEX;
 
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
 		Document document = Document.newBuilder().setId("AZ125")
 				.addField(Field.newBuilder().setName("myField").setText("myValue")).build();
 		try {
-			indexHelper.addToIndex(indexHelper.SEARCH_INDEX, document);
+			indexHelper.addToIndex(INDEX_CONTROLLER_SEARCH_INDEX, document);
 		} catch (InterruptedException e) {
 			System.out.println("Interrupted");
 			return "interrupted";
 		}
 		System.out.println("Indexed a new document.");
 		// [START get_document]
-		IndexSpec indexSpec = IndexSpec.newBuilder().setName(indexHelper.SEARCH_INDEX).build();
+		IndexSpec indexSpec = IndexSpec.newBuilder().setName(INDEX_CONTROLLER_SEARCH_INDEX).build();
 		Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
 
 		// Fetch a single document by its doc_id

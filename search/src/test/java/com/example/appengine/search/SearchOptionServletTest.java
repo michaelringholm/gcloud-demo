@@ -59,7 +59,6 @@ public class SearchOptionServletTest {
   @Test
   public void doGet_successfulyInvoked() throws Exception {
     Results<ScoredDocument> result = servletUnderTest.searchOption();
-    
     assertEquals("theOnlyCoffeeRoaster", result.iterator().next().getId());
   }
 }

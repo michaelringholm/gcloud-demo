@@ -18,8 +18,8 @@ import com.google.appengine.api.search.StatusCode;
  * A utility class for the search API sample.
  */
 public class IndexHelper {
-	@Autowired
-	public String SEARCH_INDEX;
+	//@Autowired
+	//public String SEARCH_INDEX;
 	private static final Map<String, Index> indexMap = new HashMap<>();
 	/**
 	 * Put a given document into an index with the given indexName.
@@ -63,8 +63,8 @@ public class IndexHelper {
 	}
 	// [END putting_document_with_retry]
 	
-	public Index getIndex() {
-		IndexSpec indexSpec = IndexSpec.newBuilder().setName(SEARCH_INDEX).build();
+	public Index getIndex(String indexName) {
+		IndexSpec indexSpec = IndexSpec.newBuilder().setName(indexName).build();
 		Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
 		return index;
 	}
