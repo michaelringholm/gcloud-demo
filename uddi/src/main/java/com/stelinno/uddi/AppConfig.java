@@ -47,7 +47,7 @@ public class AppConfig {
 	
 	@Bean String version() {
 		System.out.println("called version()!");
-		return "V1.0.2017-07-07-14:40";
+		return "V1.0.2017-07-07-14:46";
 	}
 	
 	@Bean String baseUDDISearchServiceUrl() {

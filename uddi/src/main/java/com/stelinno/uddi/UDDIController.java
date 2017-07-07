@@ -155,8 +155,6 @@ public class UDDIController {
 			SimpleHTTPResponse httpResponse = httpHelper.postJson(gson.toJson(service), baseUDDISearchServiceUrl + "/index/add.ctl");
 			if(httpResponse == null)
 				logger.log(Level.SEVERE, "HttpResponse was null!");
-
-			logger.log(Level.SEVERE, httpResponse.toString());
 			
 			if(httpResponse.statusCode != HttpStatus.OK.value())
 				logger.log(Level.SEVERE, httpResponse.reason);
