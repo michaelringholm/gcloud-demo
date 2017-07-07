@@ -1,11 +1,25 @@
 package com.stelinno.uddi;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +35,7 @@ import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.apphosting.api.ApiProxy;
 import com.google.gson.Gson;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityQueryRequest;
@@ -34,6 +49,7 @@ public class UDDIController {
 		return "UDDI Home!";
 	}
 
+	private static final Logger logger = Logger.getLogger(UDDIController.class.getName());
 	@Autowired EntityManager entityManager;
 	@Autowired private Gson gson;
 	@Autowired private HttpHeaders jsonHttpHeaders;
@@ -76,6 +92,7 @@ public class UDDIController {
 		}
 
 		service = entityManager.insert(service);
+		updateIndex(service);		
 		response.data = service;
 		response.message = "Service registered!";
 		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
@@ -106,6 +123,7 @@ public class UDDIController {
 		}
 
 		service = entityManager.update(service);
+		updateIndex(service);
 		response.data = service;
 		response.message = "Service updated!";
 		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
@@ -131,7 +149,7 @@ public class UDDIController {
 		}
 
 		entityManager.delete(service);
-		service = entityManager.update(service);
+		removeFromIndex(service);
 		response.data = service;
 		response.message = "Service deleted!";
 		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
@@ -139,6 +157,7 @@ public class UDDIController {
 	
 	/***
 	 * curl http://localhost:8080/rebuild-index
+	 * curl https://uddi-dot-stelinno-dev.appspot.com/rebuild-index.ctl
 	 * 
 	 * @param service
 	 */
@@ -147,11 +166,33 @@ public class UDDIController {
 		GenericResponse response = new GenericResponse();	
 		List<Service> services = getAll();
 		for(Service service : services) {
-			jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");
+			logger.log(Level.INFO, String.format("Posting to URL [%s] ...", baseUDDISearchServiceUrl + "/index/add.ctl"));
+			HttpResponse httpResponse = jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");
+			if(httpResponse == null)
+				logger.log(Level.SEVERE, "HttpResponse was null!");
+			if(httpResponse.getStatusLine() == null)
+				logger.log(Level.SEVERE, httpResponse.toString());
+			
+			if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.OK.value())
+				logger.log(Level.SEVERE, httpResponse.getStatusLine().getReasonPhrase());
+			else
+				logger.log(Level.INFO, String.format("Service with id %d and name %s was re-indexed!", service.getId(), service.getName()));
 		}
 
 		response.message = "Service search index was rebuild!";
 		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
+	}
+	
+	private HttpResponse updateIndex(Service service) {
+		HttpResponse response = null;
+		response = jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");				
+		return response;
+	}
+	
+	private HttpResponse removeFromIndex(Service service) {
+		HttpResponse response = null;
+		response = jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");				
+		return response;
 	}
 
 	private Service getByName(String serviceName) {
@@ -279,13 +320,6 @@ public class UDDIController {
 		// Message body required though ignored
 		return version;
 	}
-	
-	@RequestMapping("/host")
-	public @ResponseBody String host(HttpServletRequest request) {
-		//String hostName = request.getURI().getHost();
-		// Message body required though ignored
-		return request.getRequestURL().toString();
-	}	
 	
 	/***
 	 * curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results", "domain":"Sports","subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' http://localhost:8080/register 

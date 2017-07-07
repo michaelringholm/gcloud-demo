@@ -47,11 +47,14 @@ public class AppConfig {
 	
 	@Bean String version() {
 		System.out.println("called version()!");
-		return "V1.0.2017-07-05-14:20";
+		return "V1.0.2017-07-06-11:09";
 	}
 	
 	@Bean String baseUDDISearchServiceUrl() {
-		return "https://search-dot-stelinno-dev.appspot.com";
+		return "http://search-dot-stelinno-dev.appspot.com";
+		//return "uddi-search2.stelinno.com";
+		//return "http://uddi-search2.stelinno.com";
+		//return "https://search-dot-stelinno-dev.appspot.com";
 	}
 	
 	@Bean
