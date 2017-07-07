@@ -3,17 +3,12 @@ package com.stelinno.uddi;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -23,20 +18,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.appengine.api.search.Index;
-import com.google.appengine.api.search.IndexSpec;
-import com.google.appengine.api.search.Results;
-import com.google.appengine.api.search.ScoredDocument;
-import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.urlfetch.HTTPHeader;
 import com.google.appengine.api.urlfetch.HTTPMethod;
 import com.google.appengine.api.urlfetch.HTTPRequest;
@@ -46,9 +32,6 @@ import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 import com.google.apphosting.api.ApiProxy;
 import com.google.gson.Gson;
 import com.jmethods.catatumbo.EntityManager;
-import com.jmethods.catatumbo.EntityQueryRequest;
-import com.jmethods.catatumbo.QueryResponse;
-import com.stelinno.uddi.json.JsonHelper;
 
 @RestController
 @RequestMapping("/dns")
@@ -57,9 +40,6 @@ public class DNSController {
 	private static final Logger logger = Logger.getLogger(DNSController.class.getName());
 	@Autowired EntityManager entityManager;
 	@Autowired private Gson gson;
-	@Autowired private HttpHeaders jsonHttpHeaders;
-	@Autowired private JsonHelper jsonHelper;
-	@Autowired private String baseUDDISearchServiceUrl;
 	
 	/***
 	 * curl https://uddi-dot-stelinno-dev.appspot.com/dns/lookup.ctl?hostName=www.amazon.com

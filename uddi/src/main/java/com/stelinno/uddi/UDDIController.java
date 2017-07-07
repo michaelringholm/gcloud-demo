@@ -1,25 +1,10 @@
 package com.stelinno.uddi;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,12 +20,12 @@ import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
-import com.google.apphosting.api.ApiProxy;
 import com.google.gson.Gson;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityQueryRequest;
 import com.jmethods.catatumbo.QueryResponse;
-import com.stelinno.uddi.json.JsonHelper;
+import com.stelinno.http.HTTPHelper;
+import com.stelinno.http.SimpleHTTPResponse;
 
 @RestController
 public class UDDIController {
@@ -53,7 +38,7 @@ public class UDDIController {
 	@Autowired EntityManager entityManager;
 	@Autowired private Gson gson;
 	@Autowired private HttpHeaders jsonHttpHeaders;
-	@Autowired private JsonHelper jsonHelper;
+	@Autowired private HTTPHelper httpHelper;
 	@Autowired private String baseUDDISearchServiceUrl;
 
 	/***
@@ -167,14 +152,14 @@ public class UDDIController {
 		List<Service> services = getAll();
 		for(Service service : services) {
 			logger.log(Level.INFO, String.format("Posting to URL [%s] ...", baseUDDISearchServiceUrl + "/index/add.ctl"));
-			HttpResponse httpResponse = jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");
+			SimpleHTTPResponse httpResponse = httpHelper.postJson(gson.toJson(service), baseUDDISearchServiceUrl + "/index/add.ctl");
 			if(httpResponse == null)
 				logger.log(Level.SEVERE, "HttpResponse was null!");
-			if(httpResponse.getStatusLine() == null)
-				logger.log(Level.SEVERE, httpResponse.toString());
+
+			logger.log(Level.SEVERE, httpResponse.toString());
 			
-			if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.OK.value())
-				logger.log(Level.SEVERE, httpResponse.getStatusLine().getReasonPhrase());
+			if(httpResponse.statusCode != HttpStatus.OK.value())
+				logger.log(Level.SEVERE, httpResponse.reason);
 			else
 				logger.log(Level.INFO, String.format("Service with id %d and name %s was re-indexed!", service.getId(), service.getName()));
 		}
@@ -183,15 +168,13 @@ public class UDDIController {
 		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
 	}
 	
-	private HttpResponse updateIndex(Service service) {
-		HttpResponse response = null;
-		response = jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");				
+	private SimpleHTTPResponse updateIndex(Service service) {
+		SimpleHTTPResponse response = httpHelper.postJson(gson.toJson(service), baseUDDISearchServiceUrl + "/index/add.ctl");				
 		return response;
 	}
 	
-	private HttpResponse removeFromIndex(Service service) {
-		HttpResponse response = null;
-		response = jsonHelper.postJson(service, baseUDDISearchServiceUrl + "/index/add.ctl");				
+	private SimpleHTTPResponse removeFromIndex(Service service) {
+		SimpleHTTPResponse response = httpHelper.postJson(gson.toJson(service), baseUDDISearchServiceUrl + "/index/add.ctl");				
 		return response;
 	}
 
