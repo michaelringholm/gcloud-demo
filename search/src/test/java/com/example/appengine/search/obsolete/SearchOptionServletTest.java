@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.appengine.search;
+package com.example.appengine.search.obsolete;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.*;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.stelinno.uddi.search.SearchOptionServlet;
+import com.stelinno.uddi.search.obsolote.SearchOptionServlet;
 import com.stelinno.uddi.search.test.AppConfig;
 
 import org.junit.After;

@@ -3,6 +3,10 @@ package com.stelinno.uddi.search;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import com.google.gson.Gson;
 
 @Configuration
 @ComponentScan("com.stelinno.uddi.search")
@@ -32,12 +36,22 @@ public class AppConfig {
 		return "UDDI_PRIMARY_SEARCH_INDEX";
 	}
 	
+	@Bean Gson gson() {
+		return new Gson();
+	}
+	
+	@Bean HttpHeaders jsonHttpHeaders() {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		return httpHeaders;
+	}	
+	
 	@Bean IndexHelper indexHelper() {
 		return new IndexHelper();
 	}
 	
 	@Bean String version() {
 		System.out.println("called version()!");
-		return "V1.0.2017-07-05-14:20";
+		return "V1.0.2017-07-06-10:31";
 	}
 }

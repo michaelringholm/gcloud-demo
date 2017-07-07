@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.example.appengine.search;
+package com.example.appengine.search.obsolete;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.stelinno.uddi.search.SchemaServlet;
+import com.stelinno.uddi.search.obsolote.SchemaServlet;
 import com.stelinno.uddi.search.test.AppConfig;
 
 import org.junit.After;
@@ -33,10 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfig.class})

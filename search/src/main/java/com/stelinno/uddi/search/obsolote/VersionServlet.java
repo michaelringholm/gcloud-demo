@@ -1,4 +1,4 @@
-package com.stelinno.uddi.search;
+package com.stelinno.uddi.search.obsolote;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.stelinno.uddi.search;
+package com.stelinno.uddi.search.obsolote;
 
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Index;

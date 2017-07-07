@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.stelinno.uddi.search;
+package com.stelinno.uddi.search.obsolote;
 
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.SearchServiceFactory;
-
+import com.stelinno.uddi.search.IndexHelper;
 // @formatter:off
 // CHECKSTYLE:OFF
 // [START schema_import]

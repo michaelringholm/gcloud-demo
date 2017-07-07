@@ -3,45 +3,24 @@ package com.stelinno.uddi.search;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-// [START index_import]
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.PutException;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
-// [END index_import]
 
-/**
- * A utility class for the search API sample.
- */
 public class IndexHelper {
-	//@Autowired
-	//public String SEARCH_INDEX;
+
 	private static final Map<String, Index> indexMap = new HashMap<>();
 	/**
 	 * Put a given document into an index with the given indexName.
-	 * 
-	 * @param indexName
-	 *            The name of the index.
-	 * @param document
-	 *            A document to add.
-	 * @throws InterruptedException
-	 *             When Thread.sleep is interrupted.
+	 * @param indexName The name of the index.
+	 * @param document A document to add.
+	 * @throws InterruptedException When Thread.sleep is interrupted.
 	 */
-	// [START putting_document_with_retry]
 	public void addToIndex(String indexName, Document document) throws InterruptedException {
-		Index index = null;
-		
-		if(indexMap.containsKey(indexName))
-			index = indexMap.get(indexName);
-		else {
-			IndexSpec indexSpec = IndexSpec.newBuilder().setName(indexName).build();
-			index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
-			indexMap.put(indexName, index);
-		}
+		Index index = getIndex(indexName);
 
 		final int maxRetry = 3;
 		int attempts = 0;
@@ -61,11 +40,25 @@ public class IndexHelper {
 			break;
 		}
 	}
-	// [END putting_document_with_retry]
+
+	public void removeFromIndex(String indexName, String id) {
+		Index index = getIndex(indexName);
+		index.delete(id);
+	}
 	
-	public Index getIndex(String indexName) {
-		IndexSpec indexSpec = IndexSpec.newBuilder().setName(indexName).build();
+	Index getIndex(String indexName) {
+		/*IndexSpec indexSpec = IndexSpec.newBuilder().setName(indexName).build();
 		Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
+		return index;*/
+		Index index = null;
+		if(indexMap.containsKey(indexName))
+			index = indexMap.get(indexName);
+		else {
+			IndexSpec indexSpec = IndexSpec.newBuilder().setName(indexName).build();
+			index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
+			indexMap.put(indexName, index);
+		}
 		return index;
 	}
+
 }
