@@ -166,6 +166,61 @@ public class UDDIController {
 		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
 	}
 	
+	/***
+	 * test: curl https://uddi-dot-stelinno-dev.appspot.com/search.ctl?serviceName=parcel
+	 * @param serviceName
+	 * @return
+	 */
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
+	public ResponseEntity<String> search(String serviceName) {
+		GenericResponse response = new GenericResponse();
+		List<Service> servicesFound = new ArrayList<>();
+		Results<ScoredDocument> results = getIndex().search(serviceName);		
+		for (ScoredDocument document : results) {
+			Logger.getGlobal().info("name: " + document.getOnlyField("name").getText());
+			Logger.getGlobal().info("domain: " + document.getOnlyField("domain").getText());
+			servicesFound.add(DocumentMapper.toService(document));
+		}
+
+		response.data = servicesFound;
+		response.message = String.format("Found %d services!", servicesFound.size());
+		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
+	}	
+	
+	/***
+	 * For query syntax please see
+	 * https://cloud.google.com/datastore/docs/reference/gql_reference curl
+	 * http://localhost:8080/find?serviceName=Sports%20Results
+	 * 
+	 * @param serviceName
+	 * @return
+	 */
+	@RequestMapping(value = "/searchByName", method = RequestMethod.GET)
+	public ResponseEntity<String> searchByName(String serviceName) {
+		GenericResponse response = new GenericResponse();
+		final List<Service> servicesFound = new ArrayList<>();
+
+		Service service = new Service();
+		service.setName(serviceName);
+		SimpleHTTPResponse httpResponse = httpHelper.postJson(gson.toJson(service), baseUDDISearchServiceUrl + "/index/search.ctl");				
+		Results<ScoredDocument> results = (Results<ScoredDocument>)httpResponse.payload;
+		
+		//Results<ScoredDocument> results = getIndex().search(serviceName);
+		for (ScoredDocument document : results) {
+			logger.info("name: " + document.getOnlyField("name").getText());
+			logger.info("domain: " + document.getOnlyField("domain").getText());
+			servicesFound.add(DocumentMapper.toService(document));
+		}
+		
+		response.message = String.format("Found %d services!", servicesFound.size());
+		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
+	}
+	
+	/*private SimpleHTTPResponse searchIndex(Service service) {
+		SimpleHTTPResponse response = httpHelper.postJson(gson.toJson(service), baseUDDISearchServiceUrl + "/index/search.ctl");				
+		return response;
+	}*/
+	
 	private SimpleHTTPResponse updateIndex(Service service) {
 		SimpleHTTPResponse response = httpHelper.postJson(gson.toJson(service), baseUDDISearchServiceUrl + "/index/add.ctl");				
 		return response;
@@ -215,71 +270,15 @@ public class UDDIController {
 	}
 	
 
-	private static final String PRIMARY_SEARCH_INDEX = "PRIMARY_SEARCH_INDEX";
+	@Autowired
+	private String UDDI_PRIMARY_SEARCH_INDEX;
 
 	private Index getIndex() {
-		IndexSpec indexSpec = IndexSpec.newBuilder().setName(PRIMARY_SEARCH_INDEX).build();
+		IndexSpec indexSpec = IndexSpec.newBuilder().setName(UDDI_PRIMARY_SEARCH_INDEX).build();
 		Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
 		return index;
 	}
 
-	/***
-	 * For query syntax please see
-	 * https://cloud.google.com/datastore/docs/reference/gql_reference curl
-	 * http://localhost:8080/findByName?name=Sports%20Results
-	 * 
-	 * @param serviceName
-	 * @return
-	 */
-	@RequestMapping(value = "/find", method = RequestMethod.GET)
-	private @ResponseBody Object find(String serviceName) {
-		final List<Service> servicesFound = new ArrayList<>();
-		/*
-		 * EntityQueryRequest request = entityManager.
-		 * createEntityQueryRequest("SELECT * FROM service WHERE name = @name");
-		 * request.setNamedBinding("name", serviceName); QueryResponse<Service>
-		 * response = entityManager.executeEntityQueryRequest(Service.class,
-		 * request); servicesFound = response.getResults();
-		 */
-
-		/*
-		 * String queryString = "product = piano AND price < 5000";
-		 * Results<ScoredDocument> results = getIndex().search(queryString);
-		 * 
-		 * // Iterate over the documents in the results for (ScoredDocument
-		 * document : results) { // handle results System.out.println("name: " +
-		 * document.getOnlyField("name").getText());
-		 * System.out.println("domain: " +
-		 * document.getOnlyField("domain").getText()); //out.println(", price: "
-		 * + document.getOnlyField("price").getNumber()); }
-		 */
-		Results<ScoredDocument> results = getIndex().search(serviceName);		
-		for (ScoredDocument document : results) {
-			System.out.println("name: " + document.getOnlyField("name").getText());
-			System.out.println("domain: " + document.getOnlyField("domain").getText());
-			servicesFound.add(DocumentMapper.toService(document));
-		}
-
-		return new Object() {
-			public int status = HttpStatus.OK.value();
-			public List<Service> services = servicesFound;
-		};
-		
-		//return results;
-	}
-	
-	@RequestMapping(value = "/find2", method = RequestMethod.GET)
-	private @ResponseBody Object find2(String serviceName) {
-		List<Service> servicesFound = new ArrayList<>();
-		Results<ScoredDocument> results = getIndex().search(serviceName);		
-		for (ScoredDocument document : results) {
-			Logger.getGlobal().info("name: " + document.getOnlyField("name").getText());
-			Logger.getGlobal().info("domain: " + document.getOnlyField("domain").getText());
-			servicesFound.add(DocumentMapper.toService(document));
-		}
-
-		return servicesFound;
-	}	
 
 	/**
 	 * <a href=

@@ -8,13 +8,20 @@ public abstract class DocumentMapper {
 	
 		service.setId(Long.parseLong(document.getId()));
 		service.setName(document.getOnlyField("name").getText());
-		service.setDomain(document.getOnlyField("domain").getText());
-		service.setSubDomain(document.getOnlyField("subDomain").getText());
-		service.setEndpoint(document.getOnlyField("endpoint").getText());
-		service.setDescription(document.getOnlyField("description").getText());
-		service.setSupportChat(document.getOnlyField("supportChat").getText());
-		service.setSupportEmail(document.getOnlyField("supportEmail").getText());
-		service.setServiceType(document.getOnlyField("serviceType").getText());
+		if(document.getFieldCount("domain") > 0)
+			service.setDomain(document.getOnlyField("domain").getText());
+		if(document.getFieldCount("subDomain") > 0)
+			service.setSubDomain(document.getOnlyField("subDomain").getText());
+		if(document.getFieldCount("endpoint") > 0)
+			service.setEndpoint(document.getOnlyField("endpoint").getText());
+		if(document.getFieldCount("description") > 0)
+			service.setDescription(document.getOnlyField("description").getText());
+		if(document.getFieldCount("supportChat") > 0)
+			service.setSupportChat(document.getOnlyField("supportChat").getText());
+		if(document.getFieldCount("supportEmail") > 0)
+			service.setSupportEmail(document.getOnlyField("supportEmail").getText());
+		if(document.getFieldCount("serviceType") > 0)
+			service.setServiceType(document.getOnlyField("serviceType").getText());
 		
 		return service;
 	}

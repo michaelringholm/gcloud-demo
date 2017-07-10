@@ -44,11 +44,7 @@ public class AppConfig {
 		
 		return em;
 	}
-	
-	@Bean String version() {
-		System.out.println("called version()!");
-		return "V1.0.2017-07-07-14:46";
-	}
+
 	
 	@Bean String baseUDDISearchServiceUrl() {
 		return "http://search-dot-stelinno-dev.appspot.com";
@@ -63,6 +59,10 @@ public class AppConfig {
 		return httpHeaders;
 	}
 	
+	@Bean String  UDDI_PRIMARY_SEARCH_INDEX() {
+		return "UDDI_PRIMARY_SEARCH_INDEX";
+	}
+	
 	@Bean Gson gson() {
 		return new Gson();
 	}
@@ -72,5 +72,10 @@ public class AppConfig {
 			return new GoogleHTTPHelper();
 		else
 			return new StandardHTTPHelper();
+	}
+	
+	@Bean String version() {
+		System.out.println("called version()!");
+		return "V1.0.2017-07-10-12:45";
 	}
 }
