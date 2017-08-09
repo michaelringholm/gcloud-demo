@@ -2,8 +2,8 @@ package com.stelinno.uddi.search;
 
 import com.google.apphosting.api.ApiProxy;
 import com.google.gson.Gson;
-import com.stelinno.entities.Service;
 import com.stelinno.mappers.ServiceMapper;
+import com.stelinno.uddi.entities.Service;
 import com.stelinno.http.GenericResponse;
 
 import java.util.logging.Level;

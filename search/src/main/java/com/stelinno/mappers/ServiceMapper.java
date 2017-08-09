@@ -2,7 +2,7 @@ package com.stelinno.mappers;
 
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
-import com.stelinno.entities.Service;
+import com.stelinno.uddi.entities.Service;
 
 public abstract class ServiceMapper {
 	public static Document toDocument(Service service) {

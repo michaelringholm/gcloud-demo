@@ -126,9 +126,23 @@ Copyright 2015 Google Inc.
 	    <artifactId>spring-test</artifactId>
 	    <version>4.3.9.RELEASE</version>
 	    <scope>test</scope>
-	</dependency>
-    
+	</dependency>    
+	
+	<!-- Stelinno Maven Repository -->
+	<dependency>
+	    <groupId>com.stelinno.uddi</groupId>
+	    <artifactId>uddi-dtl</artifactId>
+	    <version>0.0.1-SNAPSHOT</version>
+	</dependency>   	
   </dependencies>
+  
+  <repositories>   
+	<repository>       
+      <id>stelinno-mvn-repo</id>
+      <name>Stelinno Maven Repository</name>
+      <url>ftp://sundgaard.ddns.net:61/stelinno-mvn-repo</url> 
+ 	</repository> 
+  </repositories>   
 
   <build>
     <plugins>
@@ -148,5 +162,13 @@ Copyright 2015 Google Inc.
         <version>3.1.0</version>
       </plugin>
     </plugins>
+    
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ftp</artifactId>
+        <version>1.0-alpha-6</version>
+      </extension>
+    </extensions>    
   </build>
 </project>

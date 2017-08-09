@@ -7,8 +7,8 @@ import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchException;
 import com.google.appengine.api.search.StatusCode;
 // [END search_document_import]
-import com.stelinno.entities.Service;
 import com.stelinno.mappers.ServiceMapper;
+import com.stelinno.uddi.entities.Service;
 // CHECKSTYLE:OFF
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
