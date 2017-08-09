@@ -32,6 +32,7 @@ import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 import com.google.apphosting.api.ApiProxy;
 import com.google.gson.Gson;
 import com.jmethods.catatumbo.EntityManager;
+import com.stelinno.uddi.entities.Service;
 
 @RestController
 @RequestMapping("/dns")
@@ -176,7 +177,7 @@ public class DNSController {
 			URL url = new URL(hostName);
 			HTTPRequest httpRequest = new HTTPRequest(url, HTTPMethod.POST);
 			httpRequest.addHeader(new HTTPHeader("X-Appengine-Inbound-Appid", ApiProxy.getCurrentEnvironment().getAppId()));
-			Service service = new Service("My Service", "A", "B", "C");
+			Service service = new Service(0, "My Service", "A", "B", "C");
 			service.setId(1);
 			String json = gson.toJson(service);
 			httpRequest.setPayload(json.getBytes());
@@ -248,7 +249,7 @@ public class DNSController {
 				// Add appid header if we are running in the google cloud, otherwise you can't call another app, locally it will fail though!
 				if(ApiProxy.getCurrentEnvironment() != null)
 					httpPost.addHeader("X-Appengine-Inbound-Appid", ApiProxy.getCurrentEnvironment().getAppId());
-				String json = gson.toJson(new Service("My Name", "A", "B", "C"));
+				String json = gson.toJson(new Service(0, "My Name", "A", "B", "C"));
 				StringEntity requestEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
 				httpPost.setEntity(requestEntity);
 			    CloseableHttpResponse response1 = httpclient.execute(httpPost);		    

@@ -21,11 +21,14 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.gson.Gson;
+import com.jmethods.catatumbo.DatastoreKey;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityQueryRequest;
+import com.jmethods.catatumbo.KeyQueryRequest;
 import com.jmethods.catatumbo.QueryResponse;
 import com.stelinno.http.HTTPHelper;
 import com.stelinno.http.SimpleHTTPResponse;
+import com.stelinno.uddi.entities.Service;
 
 @RestController
 public class UDDIController {
@@ -141,7 +144,7 @@ public class UDDIController {
 	}
 	
 	/***
-	 * curl http://localhost:8080/rebuild-index
+	 * curl http://localhost:8080/rebuild-index.ctl
 	 * curl https://uddi-dot-stelinno-dev.appspot.com/rebuild-index.ctl
 	 * 
 	 * @param service
@@ -186,6 +189,22 @@ public class UDDIController {
 		response.message = String.format("Found %d services!", servicesFound.size());
 		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
 	}	
+	
+	/***
+	 * test: curl https://uddi-dot-stelinno-dev.appspot.com/searchById.ctl?serviceId=5712536552865792
+	 * test: curl https://localhost:8080/searchById.ctl?serviceId=5712536552865792
+	 * @param serviceName
+	 * @return
+	 */
+	@RequestMapping(value = "/searchById", method = RequestMethod.GET)
+	public ResponseEntity<String> searchById(long serviceId) {
+		GenericResponse response = new GenericResponse();
+		Service service = getById(serviceId);
+
+		response.data = service;
+		response.message = "Found service!";
+		return new ResponseEntity<String>(gson.toJson(response), jsonHttpHeaders, HttpStatus.OK);
+	}		
 	
 	/***
 	 * For query syntax please see
@@ -245,16 +264,21 @@ public class UDDIController {
 	}
 	
 	private Service getById(long id) {
-		EntityQueryRequest request = entityManager.createEntityQueryRequest("SELECT * FROM service WHERE id = @id");
-		request.setNamedBinding("id", id);
-		QueryResponse<Service> response = entityManager.executeEntityQueryRequest(Service.class, request);
-		List<Service> services = response.getResults();
+		//Object serv = entityManager.loadById(Service.class, id);
+		Service service = entityManager.load(Service.class, id);
+		//EntityQueryRequest request = entityManager.createEntityQueryRequest("SELECT * FROM service WHERE id = @id");
+		//KeyQueryRequest request2 = entityManager.createKeyQueryRequest("SELECT * FROM service WHERE id = @id");
+		//request2.setNamedBinding("id", id);
+		//QueryResponse<DatastoreKey> response2 = entityManager.executeKeyQueryRequest(request2);
+		//request.setNamedBinding("id", id);
+		//QueryResponse<Service> response = entityManager.executeEntityQueryRequest(Service.class, request);
+		//List<Service> services = response.getResults();
 
-		Service serviceFound = null;
+		/*Service serviceFound = null;
 		if (services.size() > 0)
-			serviceFound = services.get(0);
+			serviceFound = services.get(0);*/
 
-		return serviceFound;
+		return service;
 	}
 	
 	/**

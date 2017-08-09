@@ -1,6 +1,7 @@
 package com.stelinno.uddi;
 
 import com.google.appengine.api.search.Document;
+import com.stelinno.uddi.entities.Service;
 
 public abstract class DocumentMapper {
 	public static Service toService(Document document) {
