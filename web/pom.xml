@@ -36,13 +36,6 @@
     <jetty.maven.plugin>9.4.3.v20170317</jetty.maven.plugin>
   </properties>
 
-  <parent>                              <!-- Get parameters and allow bulk testing -->
-    <artifactId>gcloud-demo</artifactId>
-    <groupId>com.stelinno.demo</groupId>
-    <version>1.0.0</version>
-    <relativePath>..</relativePath>
-  </parent>
-
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>

@@ -13,7 +13,8 @@ import com.jmethods.catatumbo.EntityManagerFactory;
 public class ParcelServiceCatatumbo {
 	public void insertNew() {
 		EntityManagerFactory emf = EntityManagerFactory.getInstance();
-		EntityManager em = emf.createDefaultEntityManager();
+		//EntityManager em = emf.createDefaultEntityManager("com.stelinno.uddi");
+		EntityManager em = emf.createEntityManager("stelinno-dev", "Stelinno-DEV-f9c6d1e34d94.json", "com.stelinno.uddi");
 		
 		ParcelCatatumbo parcel = new ParcelCatatumbo("DK55557777", new Date());
 		parcel = em.insert(parcel);

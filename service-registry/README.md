@@ -1,3 +1,6 @@
+# gcloud docs
+https://cloud.google.com/sdk/gcloud/reference/app/versions/describe
+
 # If the project is new, first run the below command to create a "master" app
 gcloud app create
 
@@ -25,6 +28,13 @@ http://jmethods.com/catatumbo/quick-start.html
 
 # Call upsert remotely
 curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"name":"Sports Results", "domain":"Sports", "subDomain":"Statistics", "endpoint":"http://sports-service.azure.com"}' https://service-registry-dot-stelinno-dev.appspot.com/upsert
+
+# GQL Syntax
+https://cloud.google.com/datastore/docs/reference/gql_reference
+
+# Indexing for use with Search API
+https://cloud.google.com/appengine/docs/standard/java/search/?hl=en_US&_ga=1.236706563.345585972.1497603790
+
 
 
 # ======== OBSOLETE ============ #

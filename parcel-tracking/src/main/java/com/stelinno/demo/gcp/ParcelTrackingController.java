@@ -15,10 +15,10 @@ public class ParcelTrackingController extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     PrintWriter out = resp.getWriter();
-    out.println("{ creating new parcel.... }");
+    //out.println("{ creating new parcel.... }");
     //new ParcelService().insertNew();
-    new ParcelServiceGCD().insertNew();
-    out.println("{ parcel: { parcelId:DK281382183, firstReceived:24022017 } }");
+    //new ParcelServiceGCD().insertNew();
+    //out.println("{ parcel: { parcelId:DK281382183, firstReceived:24022017 } }");
     
     out.println("{ creating new parcel with Catatumbo.... }");
     new ParcelServiceCatatumbo().insertNew();
